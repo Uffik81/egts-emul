@@ -202,35 +202,7 @@ class EGTStrack(object):
         self._service += headService + _service
         self._rn += 1
         pass
-        
-    def response(self,_paketid):
-        self._pid += 1
-        rn = self._pid.to_bytes(2, byteorder='little')
-        # ----------------------------
-        self._servic = b'' # BEGIN PACKET        
-        # ----------------------------
-        if self._service != None:
-            self._sfrcs = self.data_crc(self._service).to_bytes(2, byteorder='little')
-            self._fdl = len(self._service).to_bytes(2, byteorder='little')        
-        packetPVR = b'\x01'
-        packetSKID = b'\x00'
-        packetFLAGS = b'\x00'
-        packetHL = b'\x0b'
-        packetHE = b'\x00'
-        getBytes = b''
-        getBytes += packetPVR
-        getBytes += packetSKID
-        getBytes += packetFLAGS
-        getBytes += packetHL
-        getBytes += packetHE
-        getBytes += self._fdl #.to_bytes(2, byteorder='big')
-        getBytes += rn
-        getBytes += b'\x00'
-        self._hcs = self.header_crc(getBytes).to_bytes(1, byteorder='little')
-        getBytes = getBytes + self._hcs  + self._service + self._sfrcs
-        self._service = None        
-        return getBytes    
-        pass
+      
         
     def new_message(self):
         if self._service == None:
@@ -301,14 +273,14 @@ class EGTStrack(object):
 
 
 sock = socket.socket()
-sock.connect(('egts.yandex.net', 4000)) #
-cmd1 = EGTStrack(deviceid = "111111111", deviceimei="865811111111111")
-message_b = cmd1.new_message()
+sock.connect(('egts.yandex.net', 4000)) # Connecting Yandex.Routing
+cmd1 = EGTStrack(deviceid = "111111111", deviceimei="865811111111111") # Create a class and configure the device
+message_b = cmd1.new_message() # get message
 print('CLT >> "{}"'.format(message_b.hex()))
-sock.sendall(message_b)
-recv_b = sock.recv(256)
+sock.sendall(message_b) # sends a message to the server
+recv_b = sock.recv(256) # 
 print('SRV >> "{}"'.format(recv_b.hex()))
-
+# Example geopoints
 masspoint = [{'long':40.055205,'lat':47.423826, 'speed':90},
              {'long':39.7202,'lat':46.969264, 'speed':90},
              {'long':39.135668,'lat':45.1951, 'speed':90},
